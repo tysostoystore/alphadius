@@ -1,0 +1,90 @@
+---
+import "@/styles/globals.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "ALPHADIUS — Predictive A&R Terminal",
+  description = "Identifying undervalued Audius artists by matching social traction with market valuation. Early alpha discovery for the creator economy.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-[#0A0510] text-zinc-200 antialiased font-sans flex flex-col">
+    <!-- Top gradient line -->
+    <div
+      class="fixed top-0 left-0 right-0 h-[2px] z-50"
+      style="background: linear-gradient(90deg, transparent, #a855f7, #c084fc, #d8b4fe, transparent)"
+    >
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-[#0A0510]/80 backdrop-blur-xl border-b border-white/5 w-full">
+      <div class="px-4 sm:px-8 lg:px-12 py-3 sm:py-4 flex items-center justify-between w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.5)]"></div>
+            <span class="font-sans text-base sm:text-lg text-white font-bold tracking-wide">
+              ALPHADIUS
+            </span>
+          </div>
+          <div class="h-4 sm:h-5 w-[1px] bg-white/10 hidden xs:block"></div>
+          <span class="text-[10px] sm:text-sm text-zinc-400 font-medium hidden xs:block">
+            Predictive A&R Terminal
+          </span>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4">
+          <button id="about-btn" class="bg-zinc-800 hover:bg-zinc-700 hover:border-zinc-600 border border-zinc-700 text-white shadow-none items-center justify-center gap-2 px-3 sm:px-4 py-1.5 whitespace-nowrap text-[10px] sm:text-xs uppercase tracking-widest font-bold rounded transition-colors hidden sm:flex" title="About ALPHADIUS">
+            About
+          </button>
+          <button id="about-btn-mobile" class="bg-zinc-800 hover:bg-zinc-700 hover:border-zinc-600 border border-zinc-700 text-white shadow-none items-center justify-center gap-2 px-2.5 py-1 whitespace-nowrap text-[10px] uppercase tracking-widest font-bold rounded transition-colors flex sm:hidden" title="About ALPHADIUS">
+            ?
+          </button>
+          <div class="flex items-center gap-2 text-[10px] sm:text-xs font-semibold text-zinc-400 bg-white/5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/5">
+            <div class="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_5px_#a855f7]"></div>
+            <span>LIVE</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="w-full px-4 sm:px-8 lg:px-12 py-4 sm:py-6">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 mt-auto bg-[#0A0510]/50 w-full">
+      <div class="px-6 sm:px-8 lg:px-12 py-6 w-full">
+        <p class="text-sm text-zinc-500 font-medium text-center">
+          ALPHADIUS v0.1.0 — Data from Audius API. Not financial advice.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Dispatch custom event to open the About modal inside the React island
+      const aboutBtn = document.getElementById('about-btn');
+      const aboutBtnMobile = document.getElementById('about-btn-mobile');
+      
+      const dispatchOpenAbout = () => {
+        window.dispatchEvent(new CustomEvent('open-about'));
+      };
+
+      if (aboutBtn) aboutBtn.addEventListener('click', dispatchOpenAbout);
+      if (aboutBtnMobile) aboutBtnMobile.addEventListener('click', dispatchOpenAbout);
+    </script>
+  </body>
+</html>

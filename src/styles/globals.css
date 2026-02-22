@@ -1,0 +1,155 @@
+@config "../../tailwind.config.mjs";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #0A0510;
+    --bg-surface: #140A26;
+    --bg-elevated: #1F103A;
+    --border-color: #381D66;
+    --text-primary: #F4F4F5;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
+    /* Re-mapping neon colors to shades of purple for the redesign */
+    --neon-cyan: #A855F7;
+    /* Purple 500 */
+    --neon-magenta: #C084FC;
+    /* Purple 400 */
+    --neon-green: #D8B4FE;
+    /* Purple 300 */
+    --neon-yellow: #F3E8FF;
+    /* Purple 100 */
+    --neon-high-alpha: #d946ef;
+    /* Fuchsia 500 for distinction */
+  }
+
+  html {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+    overflow-x: hidden;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #1e1e2e #0a0a0f;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #0a0a0f;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #1e1e2e;
+    border-radius: 3px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #2e2e3e;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: rgba(19, 19, 26, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-panel-strong {
+    background: rgba(19, 19, 26, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+  }
+
+  .neon-glow-cyan {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.2),
+      0 0 40px rgba(168, 85, 247, 0.1);
+  }
+
+  .neon-glow-green {
+    box-shadow: 0 0 15px rgba(216, 180, 254, 0.2),
+      0 0 40px rgba(216, 180, 254, 0.1);
+  }
+
+  .neon-glow-magenta {
+    box-shadow: 0 0 15px rgba(192, 132, 252, 0.2),
+      0 0 40px rgba(192, 132, 252, 0.1);
+  }
+
+  .score-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-xs font-semibold;
+  }
+
+  .score-high {
+    @apply score-badge bg-neon-green/10 text-neon-green border border-neon-green/20;
+  }
+
+  .score-mid {
+    @apply score-badge bg-neon-yellow/10 text-neon-yellow border border-neon-yellow/20;
+  }
+
+  .score-low {
+    @apply score-badge bg-neon-magenta/10 text-neon-magenta border border-neon-magenta/20;
+  }
+
+  .table-row-hover {
+    @apply transition-all duration-300 ease-out cursor-pointer;
+  }
+
+  .table-row-hover:hover {
+    background: rgba(168, 85, 247, 0.04);
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.05));
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: #F4F4F5;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(168, 85, 247, 0.1));
+    border-color: rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .btn-buy {
+    @apply px-4 py-1.5 rounded-xl font-semibold text-sm transition-all duration-300 text-white;
+    background: linear-gradient(135deg, #A855F7, #7E22CE);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(126, 34, 206, 0.3);
+  }
+
+  .btn-buy:hover {
+    background: linear-gradient(135deg, #B873F8, #9333EA);
+    box-shadow: 0 6px 20px rgba(126, 34, 206, 0.5);
+    transform: translateY(-2px);
+  }
+
+  /* Recharts Snapping Fix for Fullscreen Exit */
+  .map-container-snapped .recharts-surface,
+  .map-container-snapped .recharts-scatter-symbol {
+    transition: none !important;
+    animation: none !important;
+  }
+}

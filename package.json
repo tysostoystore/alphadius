@@ -1,0 +1,32 @@
+{
+  "name": "audius-alpha-scanner",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "A&R On-chain Terminal — find undervalued artists on Audius",
+  "scripts": {
+    "dev": "bun --bun astro dev",
+    "build": "bun --bun astro build",
+    "preview": "bun --bun astro preview",
+    "ingest": "bun run scripts/ingest.ts"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.1.0",
+    "@astrojs/react": "^4.2.0",
+    "@astrojs/tailwind": "^6.0.0",
+    "@tailwindcss/typography": "^0.5.0",
+    "astro": "^5.4.0",
+    "lucide-react": "^0.474.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-zoom-pan-pinch": "^3.7.0",
+    "recharts": "^2.15.0",
+    "tailwindcss": "^3.4.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/bun": "^1.2.0",
+    "typescript": "^5.7.0"
+  }
+}

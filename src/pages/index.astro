@@ -1,0 +1,39 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { AlphaTable } from "@/components/AlphaTable";
+---
+
+<Layout>
+  <!-- Hero Section -->
+  <div class="mb-8">
+    <div class="flex items-end justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-zinc-100 flex items-center gap-3">
+          <span
+            class="inline-block w-1.5 h-8 rounded-full"
+            style="background: linear-gradient(180deg, #a855f7, #c084fc)"
+          ></span>
+          <a
+            href="https://audius.co/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-purple-500 hover:text-purple-400 underline decoration-purple-500/30 underline-offset-4 transition-colors"
+            >Audius</a
+          > Alpha Terminal
+        </h1>
+        <p class="text-sm text-zinc-500 mt-1 font-sans">
+          Detecting undervalued artists through social-to-market divergence
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="mt-4 h-[1px]"
+      style="background: linear-gradient(90deg, #a855f7, transparent 100%)"
+    >
+    </div>
+  </div>
+
+  <!-- Main Dashboard -->
+  <AlphaTable client:load />
+</Layout>

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+.env
+*.db
+!audius_alpha.db
+*.db-*
+temp_coins.json
+.DS_Store

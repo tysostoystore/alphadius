@@ -1,0 +1,35 @@
+name: Daily Data Ingestion
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at 00:00 UTC
+  workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+  update-database:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push the updated database back to the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run data ingestion script
+        run: bun run ./scripts/ingest.ts
+
+      - name: Commit and push updated database
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add audius_alpha.db
+          # Only commit if the database file actually changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: automated daily database update" && git push)
