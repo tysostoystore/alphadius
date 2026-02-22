@@ -7,3 +7,4 @@ dist/
 *.db-*
 temp_coins.json
 .DS_Store
+.vercel/
