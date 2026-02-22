@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "api/**": {
+            "includeFiles": "audius_alpha.db"
+        }
+    }
+}

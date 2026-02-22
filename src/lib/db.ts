@@ -4,15 +4,28 @@ import path from "node:path";
 import process from "node:process";
 import type { ArtistSnapshot, AlphaScoreRecord } from "./types";
 
-// Always resolve relative to the project root regardless of where the build/runner executes
-const DB_PATH = path.join(process.cwd(), "audius_alpha.db");
+import fs from "node:fs";
+
+// Dynamically locate the database file. In Vercel serverless functions, the cwd is different.
+const getDbPath = () => {
+    // 1. Try process.cwd() (Works locally and in some Vercel build steps)
+    let dbPath = path.join(process.cwd(), "audius_alpha.db");
+    if (fs.existsSync(dbPath)) return dbPath;
+
+    // 2. Try relative to the current file (Often needed for Vercel Serverless output)
+    dbPath = path.join(process.cwd(), "..", "..", "..", "..", "audius_alpha.db");
+    if (fs.existsSync(dbPath)) return dbPath;
+
+    // Fallback to the default process.cwd() and let sqlite try to create it if we are just testing
+    return path.join(process.cwd(), "audius_alpha.db");
+};
 
 let _db: DatabaseType | null = null;
 
 export function getDb(): DatabaseType {
     if (!_db) {
         // fileMustExist: false implicitly means it will create if missing
-        _db = new Database(DB_PATH);
+        _db = new Database(getDbPath());
         _db.pragma("journal_mode = WAL");
         _db.pragma("busy_timeout = 5000");
         initSchema(_db);
