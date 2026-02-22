@@ -8,15 +8,23 @@ import fs from "node:fs";
 
 // Dynamically locate the database file. In Vercel serverless functions, the cwd is different.
 const getDbPath = () => {
-    // 1. Try process.cwd() (Works locally and in some Vercel build steps)
-    let dbPath = path.join(process.cwd(), "audius_alpha.db");
-    if (fs.existsSync(dbPath)) return dbPath;
+    const paths = [
+        path.join(process.cwd(), "audius_alpha.db"),
+        path.join(process.cwd(), "..", "..", "..", "..", "audius_alpha.db"),
+        // Expected locations in Vercel Serverless `/var/task` execution context
+        path.join(process.cwd(), "dist", "server", "audius_alpha.db"),
+        path.join(process.cwd(), ".vercel", "output", "audius_alpha.db"),
+        // Explicit absolute paths as fallback
+        "/var/task/audius_alpha.db",
+        "/var/task/dist/audius_alpha.db"
+    ];
 
-    // 2. Try relative to the current file (Often needed for Vercel Serverless output)
-    dbPath = path.join(process.cwd(), "..", "..", "..", "..", "audius_alpha.db");
-    if (fs.existsSync(dbPath)) return dbPath;
+    for (const p of paths) {
+        if (fs.existsSync(p)) return p;
+    }
 
-    // Fallback to the default process.cwd() and let sqlite try to create it if we are just testing
+    // Fallback to process.cwd() so it still attempts to open a file and can throw an error
+    // with that specific path for debugging.
     return path.join(process.cwd(), "audius_alpha.db");
 };
 
