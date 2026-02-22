@@ -24,11 +24,18 @@ let _db: DatabaseType | null = null;
 
 export function getDb(): DatabaseType {
     if (!_db) {
-        // fileMustExist: false implicitly means it will create if missing
-        _db = new Database(getDbPath());
-        _db.pragma("journal_mode = WAL");
-        _db.pragma("busy_timeout = 5000");
-        initSchema(_db);
+        // Vercel Serverless has a read-only filesystem. 
+        // We MUST open the bundled SQLite file in read-only mode to prevent EROFS errors.
+        const isVercel = !!process.env.VERCEL;
+
+        _db = new Database(getDbPath(), { readonly: isVercel });
+
+        // Only configure WAL and initialize schema if we have write access (local/GitHub Actions)
+        if (!isVercel) {
+            _db.pragma("journal_mode = WAL");
+            _db.pragma("busy_timeout = 5000");
+            initSchema(_db);
+        }
     }
     return _db;
 }

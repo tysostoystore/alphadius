@@ -45,10 +45,16 @@ export const GET: APIRoute = async ({ url }) => {
                 },
             },
         );
-    } catch (err) {
+    } catch (err: any) {
         console.error("[API] alpha-feed error:", err);
         return new Response(
-            JSON.stringify({ error: "Internal server error" }),
+            JSON.stringify({
+                error: "Internal server error",
+                message: err.message,
+                stack: err.stack,
+                cwd: process.cwd(),
+                dbPathFallback: process.cwd() + "/audius_alpha.db"
+            }),
             {
                 status: 500,
                 headers: { "Content-Type": "application/json" },
