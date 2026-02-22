@@ -7,7 +7,37 @@ import type { ArtistSnapshot, AlphaScoreRecord } from "./types";
 import fs from "node:fs";
 
 // Dynamically locate the database file. In Vercel serverless functions, the cwd is different.
+// Dynamically locate the database file. In Vercel serverless functions, the cwd is different.
 const getDbPath = () => {
+    const isVercel = !!process.env.VERCEL;
+
+    // In Vercel, copy the bundled DB to /tmp to prevent strict readonly locking errors
+    if (isVercel) {
+        const bundledPaths = [
+            "/var/task/audius_alpha.db",
+            "/var/task/dist/audius_alpha.db",
+            path.join(process.cwd(), "audius_alpha.db"),
+            path.join(process.cwd(), "dist", "server", "audius_alpha.db")
+        ];
+
+        const tmpDbPath = "/tmp/audius_alpha.db";
+
+        for (const bp of bundledPaths) {
+            if (fs.existsSync(bp)) {
+                if (!fs.existsSync(tmpDbPath)) {
+                    try {
+                        fs.copyFileSync(bp, tmpDbPath);
+                        console.log(`[DB] Copied bundled DB from ${bp} to /tmp/audius_alpha.db`);
+                    } catch (e) {
+                        console.error("[DB] Failed to copy bundled DB to /tmp:", e);
+                        return bp; // Fallback to raw readonly attempting
+                    }
+                }
+                return tmpDbPath;
+            }
+        }
+    }
+
     const paths = [
         path.join(process.cwd(), "audius_alpha.db"),
         path.join(process.cwd(), "..", "..", "..", "..", "audius_alpha.db"),
