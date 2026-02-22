@@ -7,7 +7,8 @@ export default defineConfig({
   output: "server",
   adapter: vercel({
     imageService: true,
-    webAnalytics: true
+    webAnalytics: true,
+    includeFiles: ['./audius_alpha.db']
   }),
   integrations: [
     react(),
