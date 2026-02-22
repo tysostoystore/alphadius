@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { getDb, queryScores, getDistinctGenres } from "../../lib/db";
 import { AlphaFeedQuerySchema } from "../../lib/types";
 import { generateAlerts } from "../../lib/scoring";
+import fs from "node:fs";
 
 export const GET: APIRoute = async ({ url }) => {
     try {
@@ -47,13 +48,21 @@ export const GET: APIRoute = async ({ url }) => {
         );
     } catch (err: any) {
         console.error("[API] alpha-feed error:", err);
+
+        // Debugging filesystem in Vercel
+        let filesInCwd: string[] = [];
+        let filesInDistServer: string[] = [];
+        try { filesInCwd = fs.readdirSync(process.cwd()); } catch (e) { }
+        try { filesInDistServer = fs.readdirSync(process.cwd() + "/dist/server"); } catch (e) { }
+
         return new Response(
             JSON.stringify({
                 error: "Internal server error",
                 message: err.message,
                 stack: err.stack,
                 cwd: process.cwd(),
-                dbPathFallback: process.cwd() + "/audius_alpha.db"
+                filesInCwd,
+                filesInDistServer
             }),
             {
                 status: 500,
