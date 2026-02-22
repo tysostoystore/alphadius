@@ -1,21 +1,26 @@
-import { Database } from "bun:sqlite";
+import Database from "better-sqlite3";
+import type { Database as DatabaseType } from "better-sqlite3";
+import path from "node:path";
+import process from "node:process";
 import type { ArtistSnapshot, AlphaScoreRecord } from "./types";
 
-const DB_PATH = "audius_alpha.db";
+// Always resolve relative to the project root regardless of where the build/runner executes
+const DB_PATH = path.join(process.cwd(), "audius_alpha.db");
 
-let _db: Database | null = null;
+let _db: DatabaseType | null = null;
 
-export function getDb(): Database {
+export function getDb(): DatabaseType {
     if (!_db) {
-        _db = new Database(DB_PATH, { create: true });
-        _db.exec("PRAGMA journal_mode = WAL");
-        _db.exec("PRAGMA busy_timeout = 5000");
+        // fileMustExist: false implicitly means it will create if missing
+        _db = new Database(DB_PATH);
+        _db.pragma("journal_mode = WAL");
+        _db.pragma("busy_timeout = 5000");
         initSchema(_db);
     }
     return _db;
 }
 
-function initSchema(db: Database): void {
+function initSchema(db: DatabaseType): void {
     db.exec(`
     CREATE TABLE IF NOT EXISTS snapshots (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,7 +79,7 @@ function initSchema(db: Database): void {
 }
 
 // ─── Snapshot Operations ─────────────────────────────────────
-export function insertSnapshot(db: Database, s: ArtistSnapshot): void {
+export function insertSnapshot(db: DatabaseType, s: ArtistSnapshot): void {
     const stmt = db.prepare(`
     INSERT INTO snapshots (
       audius_user_id, handle, name, follower_count, track_count,
@@ -92,7 +97,7 @@ export function insertSnapshot(db: Database, s: ArtistSnapshot): void {
 }
 
 export function getLatestSnapshot(
-    db: Database,
+    db: DatabaseType,
     userId: string,
 ): ArtistSnapshot | null {
     const row = db
@@ -105,7 +110,7 @@ export function getLatestSnapshot(
 }
 
 export function getSnapshotBefore(
-    db: Database,
+    db: DatabaseType,
     userId: string,
     beforeTimestamp: number,
 ): ArtistSnapshot | null {
@@ -142,7 +147,7 @@ function rowToSnapshot(row: Record<string, unknown>): ArtistSnapshot {
 }
 
 // ─── Score Operations ────────────────────────────────────────
-export function upsertScore(db: Database, s: AlphaScoreRecord): void {
+export function upsertScore(db: DatabaseType, s: AlphaScoreRecord): void {
     // Delete old score for this user, keep only latest
     db.prepare(`DELETE FROM scores WHERE audius_user_id = ?`).run(s.audiusUserId);
 
@@ -169,7 +174,7 @@ export function upsertScore(db: Database, s: AlphaScoreRecord): void {
 }
 
 export function queryScores(
-    db: Database,
+    db: DatabaseType,
     options: {
         sort?: string;
         order?: string;
@@ -261,7 +266,7 @@ function rowToScore(row: Record<string, unknown>): AlphaScoreRecord {
     };
 }
 
-export function getDistinctGenres(db: Database): string[] {
+export function getDistinctGenres(db: DatabaseType): string[] {
     const rows = db
         .prepare(
             `SELECT DISTINCT top_track_genre FROM scores WHERE top_track_genre != '' ORDER BY top_track_genre`,

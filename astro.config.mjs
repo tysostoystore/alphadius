@@ -5,7 +5,10 @@ import vercel from "@astrojs/vercel/serverless";
 
 export default defineConfig({
   output: "server",
-  adapter: vercel(),
+  adapter: vercel({
+    imageService: true,
+    webAnalytics: true
+  }),
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),
