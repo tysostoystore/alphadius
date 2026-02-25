@@ -17,7 +17,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Bun
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Bun (for fast install)
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
@@ -25,8 +30,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Run data ingestion script
-        run: bun run ./scripts/ingest.ts
+      # better-sqlite3 is a Node.js native addon — must run ingest with Node, not Bun
+      - name: Run data ingestion script (Node.js + tsx)
+        run: npx --yes tsx scripts/ingest.ts
 
       - name: Commit and push updated database
         run: |
