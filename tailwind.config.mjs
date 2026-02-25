@@ -12,11 +12,11 @@ export default {
                     muted: "#71717A",
                 },
                 neon: {
-                    cyan: "#A855F7",
-                    magenta: "#C084FC",
-                    green: "#D8B4FE",
-                    yellow: "#F3E8FF",
-                    orange: "#D8B4FE",
+                    cyan: "#A855F7",      // purple accent
+                    magenta: "#f87171",   // red-400 — losses / negative delta
+                    green: "#34d399",     // emerald-400 — gains / positive delta
+                    yellow: "#fbbf24",    // amber-400
+                    orange: "#fb923c",    // orange-400
                 },
             },
             fontFamily: {
