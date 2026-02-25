@@ -64,7 +64,9 @@ const CustomTooltip = ({ active, payload }: any) => {
                     </p>
                     <p className="text-xs text-zinc-400 font-mono flex justify-between">
                         <span>24h Grow:</span>
-                        <span className="text-neon-green">+{artist.deltaStreams24h} streams</span>
+                        <span className={`${artist.deltaStreams24h > 0 ? 'text-neon-green' : 'text-zinc-500'}`}>
+                            {artist.deltaStreams24h > 0 ? `+${artist.deltaStreams24h.toLocaleString()} streams` : 'No 24h data'}
+                        </span>
                     </p>
                     <p className="text-xs text-zinc-400 font-mono flex justify-between items-center mt-1">
                         <span>Alpha:</span>
@@ -116,11 +118,16 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
 
     const chartData = useMemo(() => {
         const filtered = data
-            .filter(d => d.followerCount > 0 && d.totalPlays > 0 && d.deltaStreams24h > 0)
+            .filter(d => d.followerCount > 0 && d.totalPlays > 0)
             .map(d => ({
                 ...d,
                 x: Math.max(1, d.followerCount * (1 + (Math.random() * 0.1 - 0.05))),
-                y: Math.max(1, d.deltaStreams24h * (1 + (Math.random() * 0.1 - 0.05))),
+                // Y: use real delta if available; otherwise use 1% of total plays as
+                // a visual baseline so all artists scatter naturally (not collapsed to y=1)
+                y: Math.max(1, (d.deltaStreams24h > 0
+                    ? d.deltaStreams24h
+                    : Math.floor(d.totalPlays * 0.01)
+                ) * (1 + (Math.random() * 0.1 - 0.05))),
                 z: Math.max(1, d.alphaScore)
             }));
 
@@ -154,7 +161,7 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
                     Discovery Constellation
                 </h3>
                 <p className="text-[9px] sm:text-xs text-zinc-500 font-mono mt-0.5 sm:mt-1 leading-tight">
-                    X=Followers(Log) | Y=Stream Growth(Log) | Size=Alpha
+                    X=Followers(Log) | Y=Stream Velocity(Log) | Size=Alpha
                 </p>
                 <div className="mt-3 pointer-events-auto flex flex-col gap-1.5 w-[180px] sm:w-[220px]">
                     {/* Genre selector in fullscreen */}

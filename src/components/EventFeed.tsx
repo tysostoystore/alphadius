@@ -46,7 +46,7 @@ export function EventFeed({ alerts, onArtistClick }: EventFeedProps) {
             {/* Header */}
             <div className="flex items-center justify-between mb-4 pb-2 border-b border-zinc-800/50">
                 <div className="flex items-center gap-2">
-                    <Radio className="w-4 h-4 text-neon-magenta animate-pulse" />
+                    <Radio className="w-4 h-4 text-fuchsia-400 animate-pulse" />
                     <h3 className="text-xs font-mono text-zinc-400 uppercase tracking-widest font-bold">
                         Live Pulse
                     </h3>
