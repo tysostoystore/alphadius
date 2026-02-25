@@ -151,9 +151,32 @@ async function main() {
     }
 
     console.log(`  → Computed scores for ${scoredCount} artists\n`);
+
+    // Step 5: Backfill — recalculate ALL artists in DB with the current formula
+    // This ensures formula changes propagate to artists not in today's trending.
+    console.log("[Step 5/5] Backfilling all existing scores with current formula...");
+    const allScores = db.prepare(`SELECT DISTINCT audius_user_id FROM scores`).all() as { audius_user_id: string }[];
+    const newArtistIds = new Set(Array.from(artists.keys()));
+    let backfillCount = 0;
+
+    for (const { audius_user_id } of allScores) {
+        // Skip artists already recalculated in Step 4
+        if (newArtistIds.has(audius_user_id)) continue;
+
+        const latest = getLatestSnapshot(db, audius_user_id);
+        if (!latest) continue;
+
+        const previous = getSnapshotBefore(db, audius_user_id, twentyFourHoursAgo);
+        const { deltaStreams24h, deltaStreamsPercent } = computeDelta(latest, previous);
+        const scoreRecord = buildScoreRecord(latest, deltaStreams24h, deltaStreamsPercent);
+        upsertScore(db, scoreRecord);
+        backfillCount++;
+    }
+
+    console.log(`  → Backfilled ${backfillCount} existing artists\n`);
     console.log("═══════════════════════════════════════════════");
     console.log("  ✅ Ingestion complete!");
-    console.log(`  Artists: ${artists.size} | Enriched: ${enrichedCount} | Scored: ${scoredCount}`);
+    console.log(`  Artists: ${artists.size} | Enriched: ${enrichedCount} | Scored: ${scoredCount} | Backfilled: ${backfillCount}`);
     console.log("═══════════════════════════════════════════════");
 }
 
