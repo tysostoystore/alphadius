@@ -60,7 +60,7 @@ export function EventFeed({ alerts, onArtistClick }: EventFeedProps) {
             </div>
 
             {/* Events */}
-            <div className="space-y-3 max-h-[calc(100vh-250px)] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-3 max-h-[160px] sm:max-h-[calc(100vh-250px)] overflow-y-auto pr-1 custom-scrollbar">
                 {visibleAlerts.map((alert, idx) => (
                     <div
                         key={idx}

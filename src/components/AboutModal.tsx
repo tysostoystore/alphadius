@@ -175,6 +175,15 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                                         <ExternalLink className="w-3 h-3" />
                                         audius.co
                                     </a>
+                                    <a
+                                        href="https://github.com/tysostoystore"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-mono text-zinc-400 hover:text-zinc-100 flex items-center gap-1 transition-colors"
+                                    >
+                                        <ExternalLink className="w-3 h-3" />
+                                        github
+                                    </a>
                                 </div>
                             </div>
 

@@ -27,6 +27,13 @@ import { AlphaTable } from "@/components/AlphaTable";
             &nbsp;·&nbsp; Ranked by Alpha — plays vs. followers, boosted by growth.
           </span>
         </p>
+        <!-- Mobile-only: artist count + sync time (hidden sm+, those are in the header) -->
+        <div class="flex sm:hidden items-center gap-2 mt-2 text-[10px] font-mono text-zinc-500">
+          <span class="text-purple-400 font-bold" id="mobile-artist-count">—</span>
+          <span>artists indexed</span>
+          <span class="text-zinc-700">·</span>
+          <span id="mobile-last-updated" class="text-zinc-600">loading...</span>
+        </div>
       </div>
     </div>
 

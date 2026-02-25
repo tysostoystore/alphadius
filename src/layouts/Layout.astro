@@ -106,16 +106,24 @@ const {
       // Update header stats when React island loads data
       window.addEventListener('alpha-stats', (e) => {
         const { count, lastRefreshed } = (e as CustomEvent).detail;
+
+        const hoursAgo = Math.floor((Date.now() - lastRefreshed) / 3_600_000);
+        const minsAgo = Math.floor((Date.now() - lastRefreshed) / 60_000);
+        const timeStr = hoursAgo === 0
+          ? (minsAgo < 2 ? 'just now' : `${minsAgo}m ago`)
+          : `${hoursAgo}h ago`;
+
+        // Desktop header
         const countEl = document.getElementById('artist-count');
         const updatedEl = document.getElementById('last-updated');
         if (countEl) countEl.textContent = count.toLocaleString();
-        if (updatedEl) {
-          const hoursAgo = Math.floor((Date.now() - lastRefreshed) / 3_600_000);
-          const minsAgo = Math.floor((Date.now() - lastRefreshed) / 60_000);
-          updatedEl.textContent = hoursAgo === 0
-            ? (minsAgo < 2 ? 'just refreshed' : `${minsAgo}m ago`)
-            : `${hoursAgo}h ago`;
-        }
+        if (updatedEl) updatedEl.textContent = `Synced ${timeStr}`;
+
+        // Mobile hero strip
+        const mobileCountEl = document.getElementById('mobile-artist-count');
+        const mobileUpdatedEl = document.getElementById('mobile-last-updated');
+        if (mobileCountEl) mobileCountEl.textContent = count.toLocaleString();
+        if (mobileUpdatedEl) mobileUpdatedEl.textContent = `Synced ${timeStr}`;
       });
     </script>
   </body>
