@@ -299,8 +299,8 @@ export function AlphaTable() {
                                                 <button
                                                     onClick={() => toggleSort("total_plays")}
                                                     className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold border transition-colors ${sort === "total_plays"
-                                                            ? "bg-neon-cyan/10 border-neon-cyan/40 text-neon-cyan"
-                                                            : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                                                        ? "bg-neon-cyan/10 border-neon-cyan/40 text-neon-cyan"
+                                                        : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
                                                         }`}
                                                     title="Sort by total plays"
                                                 >
@@ -309,8 +309,8 @@ export function AlphaTable() {
                                                 <button
                                                     onClick={() => toggleSort("delta_streams_pct")}
                                                     className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold border transition-colors ${sort === "delta_streams_pct" || sort === "delta_streams"
-                                                            ? "bg-neon-green/10 border-neon-green/40 text-neon-green"
-                                                            : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                                                        ? "bg-neon-green/10 border-neon-green/40 text-neon-green"
+                                                        : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
                                                         }`}
                                                     title="Sort by stream growth %"
                                                 >

@@ -57,11 +57,12 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
                 topTrackPlays = Math.max(topTrackPlays, 1);
 
-                const engagement = Math.sqrt(topTrackPlays / (followers + 100));
-                const velocity = Math.floor(topTrackPlays * 0.05);
-                const momentum = Math.log2(velocity + 2);
-                const gravity = Math.log10(topTrackPlays + 1);
-                const alpha = engagement * momentum * gravity;
+                const ratio = topTrackPlays / (followers + 100);
+                const undervaluation = Math.log10(ratio + 1);
+                const credibility = Math.log10(topTrackPlays + 1);
+                const baseScore = undervaluation * credibility * 10;
+                // No real delta in modal preview — momentum = 1.0
+                const alpha = baseScore;
 
                 setCreatorAlpha(Math.round(alpha));
             } catch (e) {
@@ -119,18 +120,18 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
                             How is Alpha (α) calculated?
                         </h3>
                         <p className="mb-3">
-                            ALPHADIUS acts as a predictive A&R terminal designed to detect undervalued artists on the Audius network. It does this by analyzing <strong>social-to-market divergence</strong>.
+                            ALPHADIUS surfaces two kinds of artists the market misses: <strong>hidden gems</strong> — whose play count far exceeds their social footprint — and <strong>momentum artists</strong> actively gaining streams right now. Alpha is highest when both signals combine.
                         </p>
-                        <p className="font-mono text-[11px] sm:text-xs bg-black/50 p-2 sm:p-3 rounded border border-zinc-800 text-zinc-400 mb-3 overflow-x-auto whitespace-nowrap">
-                            α = √(Plays / (Followers + 100)) × log₂(Growth + 2) × log₁₀(Plays + 1)
+                        <p className="font-mono text-[10px] sm:text-xs bg-black/50 p-2 sm:p-3 rounded border border-zinc-800 text-zinc-400 mb-3 overflow-x-auto whitespace-nowrap">
+                            α = log₁₀(Plays/(Fol+100)+1) × log₁₀(Plays+1) × 10 × [1+log(1+Δ%/10)]
                         </p>
-                        <p className="mb-2">
-                            A high Alpha Score indicates an artist generating significant traction relative to their audience—highlighting hidden gems before they break.
+                        <p className="mb-2 text-xs text-zinc-400">
+                            The base score requires <em>both</em> an undervalued ratio and real listeners — ghost accounts can’t game it. Stream growth acts as a multiplier: +0% is ×1.0, +42% is ×2.7, +100% is ×3.4.
                         </p>
                         <div className="flex flex-wrap gap-2 text-[10px] font-mono">
-                            <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">Engagement — streams vs followers</span>
-                            <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Momentum — 24h stream growth</span>
-                            <span className="px-2 py-0.5 rounded-full bg-zinc-500/10 text-zinc-300 border border-zinc-700">Gravity — proven listeners</span>
+                            <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">💎 Undervaluation — plays vs followers</span>
+                            <span className="px-2 py-0.5 rounded-full bg-zinc-500/10 text-zinc-300 border border-zinc-700">📊 Credibility — proven listeners</span>
+                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">⚡ Momentum — growth rate multiplier</span>
                         </div>
                     </div>
 
