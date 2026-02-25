@@ -157,7 +157,7 @@ export interface AlphaFeedResponse {
 // ─── API Query Schemas ───────────────────────────────────────
 export const AlphaFeedQuerySchema = z.object({
     sort: z
-        .enum(["alpha_score", "market_cap", "delta_streams", "follower_count"])
+        .enum(["alpha_score", "market_cap", "delta_streams", "delta_streams_pct", "total_plays", "follower_count"])
         .default("alpha_score"),
     order: z.enum(["asc", "desc"]).default("desc"),
     genre: z.string().optional(),

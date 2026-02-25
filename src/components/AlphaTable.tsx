@@ -54,7 +54,7 @@ function getScoreBg(score: number): string {
     return "bg-zinc-800/50 border-zinc-700/50";
 }
 
-type SortField = "alpha_score" | "market_cap" | "delta_streams" | "follower_count";
+type SortField = "alpha_score" | "market_cap" | "delta_streams" | "delta_streams_pct" | "total_plays" | "follower_count";
 
 export function AlphaTable() {
     const [data, setData] = useState<AlphaScoreRecord[]>([]);
@@ -292,8 +292,32 @@ export function AlphaTable() {
                                     <th className="text-left px-1 sm:px-3 py-2 text-[10px] font-mono text-zinc-500 uppercase tracking-tighter w-[5%] sm:w-12">#</th>
                                     <th className="text-left px-1 sm:px-3 py-2 text-[10px] font-mono text-zinc-500 uppercase tracking-tighter w-[33%] sm:w-[200px]">Artist</th>
                                     <th className="hidden lg:table-cell text-left px-4 py-2.5 text-[10px] font-mono text-zinc-500 uppercase tracking-widest w-auto">Track</th>
-                                    <th className="text-right px-1 sm:px-4 py-2 text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-tighter cursor-pointer hover:text-neon-cyan transition-colors w-[14%] sm:w-auto" onClick={() => toggleSort("delta_streams")}>
-                                        <span className="inline-flex items-center gap-0.5 sm:gap-1"><span className="hidden sm:inline">Streams</span><span className="sm:hidden">Str</span> <SortIcon field="delta_streams" /></span>
+                                    <th className="text-right px-1 sm:px-4 py-2 text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-tighter w-[14%] sm:w-auto">
+                                        <div className="flex flex-col items-end gap-0.5">
+                                            <span className="text-[7px] text-zinc-600 font-mono uppercase tracking-widest hidden sm:block">streams</span>
+                                            <div className="flex items-center gap-1">
+                                                <button
+                                                    onClick={() => toggleSort("total_plays")}
+                                                    className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold border transition-colors ${sort === "total_plays"
+                                                            ? "bg-neon-cyan/10 border-neon-cyan/40 text-neon-cyan"
+                                                            : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                                                        }`}
+                                                    title="Sort by total plays"
+                                                >
+                                                    TOT <SortIcon field="total_plays" />
+                                                </button>
+                                                <button
+                                                    onClick={() => toggleSort("delta_streams_pct")}
+                                                    className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold border transition-colors ${sort === "delta_streams_pct" || sort === "delta_streams"
+                                                            ? "bg-neon-green/10 border-neon-green/40 text-neon-green"
+                                                            : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                                                        }`}
+                                                    title="Sort by stream growth %"
+                                                >
+                                                    +% <SortIcon field="delta_streams_pct" />
+                                                </button>
+                                            </div>
+                                        </div>
                                     </th>
                                     <th className="text-right px-1 sm:px-4 py-2 text-[8px] sm:text-[10px] font-mono text-zinc-500 uppercase tracking-tighter cursor-pointer hover:text-neon-cyan transition-colors w-[12%] sm:w-auto" onClick={() => toggleSort("follower_count")}>
                                         <span className="inline-flex items-center gap-0.5 sm:gap-1"><span className="hidden sm:inline">Followers</span><span className="sm:hidden">Fol</span> <SortIcon field="follower_count" /></span>

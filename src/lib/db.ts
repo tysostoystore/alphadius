@@ -280,6 +280,8 @@ export function queryScores(
         alpha_score: "alpha_score",
         market_cap: "market_cap",
         delta_streams: "delta_streams_24h",
+        delta_streams_pct: "delta_streams_percent",
+        total_plays: "total_plays",
         follower_count: "follower_count",
     };
 
