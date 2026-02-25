@@ -86,7 +86,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export const ConstellationMap = memo(function ConstellationMap({ data, onArtistClick, onArtistHover, genres, selectedGenre, onGenreChange }: ConstellationMapProps) {
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-    const [limit, setLimit] = useState(300);
+    const [limit, setLimit] = useState(500);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     // ESC to exit fullscreen
@@ -118,16 +118,14 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
 
     const chartData = useMemo(() => {
         const filtered = data
-            .filter(d => d.followerCount > 0 && d.totalPlays > 0)
+            .filter(d => d.followerCount > 0 && d.totalPlays > 100)
             .map(d => ({
                 ...d,
-                x: Math.max(1, d.followerCount * (1 + (Math.random() * 0.1 - 0.05))),
-                // Y: use real delta if available; otherwise use 1% of total plays as
-                // a visual baseline so all artists scatter naturally (not collapsed to y=1)
-                y: Math.max(1, (d.deltaStreams24h > 0
-                    ? d.deltaStreams24h
-                    : Math.floor(d.totalPlays * 0.01)
-                ) * (1 + (Math.random() * 0.1 - 0.05))),
+                // X = total plays: more streams → further right
+                x: Math.max(1, d.totalPlays * (1 + (Math.random() * 0.08 - 0.04))),
+                // Y = undervaluation ratio (plays / followers+100)
+                // top-right = many plays + still undervalued = MAXIMUM ALPHA
+                y: Math.max(0.5, (d.totalPlays / (d.followerCount + 100)) * (1 + (Math.random() * 0.08 - 0.04))),
                 z: Math.max(1, d.alphaScore)
             }));
 
@@ -161,7 +159,7 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
                     Discovery Constellation
                 </h3>
                 <p className="text-[9px] sm:text-xs text-zinc-500 font-mono mt-0.5 sm:mt-1 leading-tight">
-                    X=Followers(Log) | Y=Stream Velocity(Log) | Size=Alpha
+                    X=Stream Count | Y=Undervaluation (Plays/Follower Ratio) | Size=Alpha
                 </p>
                 <div className="mt-3 pointer-events-auto flex flex-col gap-1.5 w-[180px] sm:w-[220px]">
                     {/* Genre selector in fullscreen */}

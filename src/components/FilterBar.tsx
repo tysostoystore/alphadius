@@ -8,7 +8,6 @@ interface FilterBarProps {
     onSearchChange: (value: string) => void;
     onRefresh: () => void;
     loading: boolean;
-    totalResults: number;
 }
 
 export function FilterBar({
@@ -19,7 +18,6 @@ export function FilterBar({
     onSearchChange,
     onRefresh,
     loading,
-    totalResults,
 }: FilterBarProps) {
     return (
         <div className="flex flex-row items-center gap-1.5 sm:gap-2 w-full">
@@ -63,10 +61,7 @@ export function FilterBar({
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             </button>
 
-            {/* Count badge */}
-            <div className="text-[9px] font-mono text-zinc-500 bg-zinc-900/60 px-2 py-1 rounded border border-zinc-800/40 shrink-0 hidden sm:block">
-                <span className="text-purple-400 font-bold">{totalResults.toLocaleString()}</span>
-            </div>
+
         </div>
     );
 }

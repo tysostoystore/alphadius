@@ -46,6 +46,24 @@ const {
           </span>
         </div>
         <div class="flex items-center gap-3 sm:gap-4">
+          <!-- Dynamic stats from React island via alpha-stats event -->
+          <div id="header-stats" class="hidden sm:flex items-center gap-2 text-[10px] font-mono text-zinc-500">
+            <span id="artist-count" class="text-purple-400 font-bold">—</span>
+            <span>artists</span>
+            <span class="text-zinc-700">·</span>
+            <span id="last-updated" class="text-zinc-600">loading...</span>
+          </div>
+          <!-- Audius badge -->
+          <a
+            href="https://audius.co"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hidden sm:flex items-center gap-1.5 text-[10px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors border border-zinc-800/60 px-2 py-1 rounded-md hover:border-zinc-700"
+            title="Powered by Audius API"
+          >
+            <span class="text-[8px]">◉</span>
+            Audius
+          </a>
           <button id="about-btn" class="bg-zinc-800 hover:bg-zinc-700 hover:border-zinc-600 border border-zinc-700 text-white shadow-none items-center justify-center gap-2 px-3 sm:px-4 py-1.5 whitespace-nowrap text-[10px] sm:text-xs uppercase tracking-widest font-bold rounded transition-colors hidden sm:flex" title="About ALPHADIUS">
             About
           </button>
@@ -75,7 +93,6 @@ const {
     </footer>
 
     <script>
-      // Dispatch custom event to open the About modal inside the React island
       const aboutBtn = document.getElementById('about-btn');
       const aboutBtnMobile = document.getElementById('about-btn-mobile');
       
@@ -85,6 +102,21 @@ const {
 
       if (aboutBtn) aboutBtn.addEventListener('click', dispatchOpenAbout);
       if (aboutBtnMobile) aboutBtnMobile.addEventListener('click', dispatchOpenAbout);
+
+      // Update header stats when React island loads data
+      window.addEventListener('alpha-stats', (e) => {
+        const { count, lastRefreshed } = (e as CustomEvent).detail;
+        const countEl = document.getElementById('artist-count');
+        const updatedEl = document.getElementById('last-updated');
+        if (countEl) countEl.textContent = count.toLocaleString();
+        if (updatedEl) {
+          const hoursAgo = Math.floor((Date.now() - lastRefreshed) / 3_600_000);
+          const minsAgo = Math.floor((Date.now() - lastRefreshed) / 60_000);
+          updatedEl.textContent = hoursAgo === 0
+            ? (minsAgo < 2 ? 'just refreshed' : `${minsAgo}m ago`)
+            : `${hoursAgo}h ago`;
+        }
+      });
     </script>
   </body>
 </html>

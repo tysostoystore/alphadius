@@ -27,6 +27,12 @@ export const GET: APIRoute = async ({ url }) => {
         const genres = getDistinctGenres(db);
         const alerts = generateAlerts(scores);
 
+        // Last ingestion timestamp from DB
+        const lastRefreshedRow = db
+            .prepare(`SELECT MAX(timestamp) as last_refreshed FROM scores`)
+            .get() as { last_refreshed: number | null };
+        const lastRefreshed = lastRefreshedRow?.last_refreshed ?? Date.now();
+
         return new Response(
             JSON.stringify({
                 data: scores,
@@ -36,6 +42,7 @@ export const GET: APIRoute = async ({ url }) => {
                     alerts: alerts.slice(0, 10),
                     query: parsed.data,
                     timestamp: Date.now(),
+                    lastRefreshed,
                 },
             }),
             {

@@ -13,7 +13,6 @@ import {
     ChevronUp,
     ChevronDown,
     Zap,
-    ExternalLink,
     List
 } from "lucide-react";
 
@@ -24,6 +23,7 @@ interface AlphaFeedResponse {
         genres: string[];
         alerts: AlphaAlert[];
         timestamp: number;
+        lastRefreshed: number;
     };
 }
 
@@ -117,6 +117,15 @@ export function AlphaTable() {
             setAlerts(json.meta.alerts);
             setGenres(json.meta.genres);
             setHasMore(json.data.length >= limit);
+            if (!isAppend && json.meta.lastRefreshed) {
+                // Push stats to Astro header via window event
+                window.dispatchEvent(new CustomEvent('alpha-stats', {
+                    detail: {
+                        count: json.meta.total,
+                        lastRefreshed: json.meta.lastRefreshed,
+                    }
+                }));
+            }
             setError(null);
         } catch (err) {
             setError((err as Error).message);
@@ -214,7 +223,6 @@ export function AlphaTable() {
                                 onSearchChange={setSearch}
                                 onRefresh={() => fetchData(false)}
                                 loading={loading}
-                                totalResults={data.length}
                             />
                         </div>
                         <div className="flex items-center gap-0.5 bg-zinc-900/90 p-0.5 rounded-lg border border-zinc-800/60 shrink-0">

@@ -1,50 +1,101 @@
-# ALPHADIUS ✦ Predictive A&R Terminal
+# ALPHADIUS — Predictive A&R Terminal
 
-ALPHADIUS is an early-discovery music terminal built to identify undervalued artists before they hit the mainstream. By monitoring raw usage metrics and cross-referencing them against social momentum, ALPHADIUS surfaces high-velocity creators in real-time.
+> **Discover artists before they blow up.**
+
+ALPHADIUS scans the [Audius](https://audius.co) decentralized music platform and surfaces emerging artists using a proprietary **Alpha Score** — a signal inspired by financial alpha that identifies talent the market has yet to price in.
+
+---
+
+## What is the Alpha Score?
+
+```
+α = log₁₀(Plays/(Followers+100)+1) × log₁₀(Plays+1) × 10 × [1 + log(1+Δ%/10)]
+```
+
+The formula rewards two types of artists:
+
+- **💎 Hidden Gems** — high play counts relative to their social footprint (market undervalues them)
+- **⚡ Breaking Artists** — significant 24h stream velocity (momentum signal)
+
+Ghost accounts and bots can't game it: the formula requires *both* real listeners and an undervalued ratio.
+
+---
 
 ## Features
 
-- **Constellation Map**: A dynamic, interactive scatter plot visualization mapping artists by Streams vs Followers, sized by Alpha Score.
-- **Alpha Table**: A dense, sortable data terminal displaying real-time metrics, streaming delta percentages, and calculated Alpha Scores.
-- **Live Pulse**: A real-time event feed surfacing high-velocity artists, hidden gems, and market opportunities.
-- **Predictive Scoring**: Custom algorithms that calculate a proprietary "Alpha" rating by weighing engagement ratios against historical momentum.
+| Feature | Description |
+|---|---|
+| 🔭 **Discovery Constellation** | Scatter plot: X=Stream Count, Y=Undervaluation, Size=Alpha |
+| ⚡ **Alpha Feed** | Live-ranked table with filter, search, and multi-column sort |
+| 💎 **Live Pulse** | Alert feed surfacing velocity events and hidden gems |
+| 🎵 **Artist Detail** | Inline track playback + full stat breakdown |
+| 🔄 **Daily Refresh** | GitHub Actions ingests fresh data every 24h |
+| 🎯 **Genre Filter** | Drill down by genre across the full dataset |
+
+---
 
 ## Tech Stack
 
-- **Framework**: [Astro](https://astro.build/) for fast, hybrid rendering.
-- **UI & Components**: React, Tailwind CSS, Lucide Icons.
-- **Data Visualization**: Recharts, React Zoom Pan Pinch.
-- **Database**: local SQLite (`better-sqlite3`) serving as a fast, read-only data layer in production.
+| Layer | Technology |
+|---|---|
+| Frontend | [Astro](https://astro.build) + React islands |
+| Styling | Tailwind CSS v4 |
+| Database | SQLite (better-sqlite3) |
+| Data Source | [Audius API](https://audius.co/api) |
+| Deployment | Vercel |
+| CI/CD | GitHub Actions (daily cron) |
+| Runtime | Bun |
 
-## Deployment (Vercel) & Zero-Cost Automation
+---
 
-This project is highly optimized for serverless deployments like **Vercel** running entirely on a free tier.
+## Architecture
 
-Since Vercel environments are serverless, the local SQLite database (`audius_alpha.db`) acts as a highly-performant, read-only data snapshot in production. 
-
-### Automated Daily Updates (GitHub Actions)
-To keep the data fresh without paying for external databases (like Postgres or Turso), this repository utilizes **GitHub Actions**:
-1. Every 24 hours (or manually triggered), a GitHub Action spins up.
-2. It runs `bun run scripts/ingest.ts` to scrape the Audius API and build a fresh `audius_alpha.db`.
-3. The Action automatically commits and pushes the updated `.db` file to the `main` branch.
-4. **Vercel** detects the push and automatically triggers a new deployment with the latest fresh data.
-
-**Zero Cost. Zero Maintenance.** Ensure that `audius_alpha.db` is whitelisted (not ignored) in your `.gitignore` so the Action can push it.
-
-### Local Development
-
-If you want to run it locally before deploying:
-```bash
-bun install
-bun run dev
+```
+Audius API ──→ scripts/ingest.ts ──→ SQLite DB ──→ /api/alpha-feed ──→ React UI
+                      ↑
+          GitHub Actions (daily, UTC 03:00)
 ```
 
-## Architecture & Data Flow
+### Ingestion Pipeline
 
-- The backend ingestion pipeline (`scripts/ingest.ts`) fetches raw data across discovery nodes, processing the data to ensure accuracy and limit spam.
-- Cross-sectional snapshots are stored dynamically into the SQLite layer.
-- Alpha Scores are regenerated continuously on the frontend APIs (`src/pages/api/alpha-feed.ts`), parsing data against the ranking formulas in `src/lib/scoring.ts` to surface the top moving artists.
+1. **Fetch** — pulls trending artists + top tracks from Audius API
+2. **Enrich** — matches artist coins from the Audius native token index
+3. **Snapshot** — stores timestamped play counts for delta computation
+4. **Score** — computes Alpha Score for all artists (including backfill of existing DB)
+5. **Commit** — pushes updated SQLite DB back to repo → Vercel auto-deploys
 
-## Disclaimer
+---
 
-This project is an experimental data analysis tool. It provides analytics based purely on public API data.
+## Running Locally
+
+```bash
+# Install dependencies
+bun install
+
+# Populate the database (requires internet access)
+bun run scripts/ingest.ts
+
+# Start dev server
+bun run dev
+# → http://localhost:4321
+```
+
+---
+
+## Alpha Score Formula — Deep Dive
+
+The formula has three multiplicative components:
+
+| Component | Signal | Formula |
+|---|---|---|
+| **Undervaluation** | Plays vs followers | `log₁₀(plays/(followers+100) + 1)` |
+| **Credibility** | Scale filter | `log₁₀(plays + 1)` |
+| **Momentum Boost** | 24h growth | `1 + log(1 + Δ%/10)` |
+
+- Base score with **0% growth** → momentum multiplier = ×1.0 (gems aren't penalized)
+- At **+42% growth** → ×2.7 boost
+- At **+100% growth** → ×3.4 boost
+
+---
+
+*Data refreshes daily via GitHub Actions. Not financial advice. Alpha scores are experimental discovery signals, not guarantees of commercial success.*
