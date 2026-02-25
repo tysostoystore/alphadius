@@ -192,6 +192,16 @@ export function AlphaTable() {
         <div className="flex flex-col lg:flex-row gap-4 pb-6 lg:pb-32">
             {/* Main content */}
             <div className={`min-w-0 ${viewMode === 'map' ? 'flex-[3]' : 'flex-[2] lg:flex-1'}`}>
+                {/* Mobile-only: Live Pulse shown at top for small screens */}
+                <div className="block lg:hidden mb-4">
+                    <EventFeed
+                        alerts={alerts}
+                        onArtistClick={(id) => {
+                            const artist = data.find(a => a.audiusUserId === id);
+                            if (artist) setSelectedArtist(artist);
+                        }}
+                    />
+                </div>
                 {/* Sticky filter bar + view toggle */}
                 <div className="sticky top-[49px] sm:top-[57px] z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-2 bg-[#0A0510]/90 backdrop-blur-xl border-b border-white/5">
                     <div className="flex flex-row items-center justify-between gap-1.5 sm:gap-4 w-full">
@@ -374,7 +384,15 @@ export function AlphaTable() {
                                                 {artist.tokenAddress ? (
                                                     <a href={`https://jup.ag/swap/SOL-${artist.tokenAddress}`} target="_blank" rel="noopener noreferrer" className="btn-buy inline-flex items-center gap-1 py-1 px-2 text-[10px]" onClick={(e) => e.stopPropagation()}>BUY</a>
                                                 ) : (
-                                                    <a href={`https://audius.co/${artist.handle}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold rounded bg-neon-cyan/5 border border-neon-cyan/20 text-neon-cyan hover:bg-neon-cyan/20 transition-all shrink-0" onClick={(e) => e.stopPropagation()}>PLAY</a>
+                                                    <a
+                                                        href={artist.topTrackId
+                                                            ? `https://audius.co/${artist.handle}/${artist.topTrackId}`
+                                                            : `https://audius.co/${artist.handle}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold rounded bg-neon-cyan/5 border border-neon-cyan/20 text-neon-cyan hover:bg-neon-cyan/20 transition-all shrink-0"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >PLAY</a>
                                                 )}
                                             </td>
                                         </tr>
@@ -402,9 +420,9 @@ export function AlphaTable() {
                 )}
             </div>
 
-            {/* Sidebar */}
-            <div className={`flex-shrink-0 ${viewMode === 'map' ? 'w-full lg:w-64' : 'w-full lg:w-80'}`}>
-                <div className="sticky top-6">
+            {/* Sidebar — hidden on mobile (Live Pulse shown at top instead) */}
+            <div className={`hidden lg:flex flex-shrink-0 ${viewMode === 'map' ? 'w-full lg:w-64' : 'w-full lg:w-80'}`}>
+                <div className="sticky top-6 w-full">
                     <EventFeed
                         alerts={alerts}
                         onArtistClick={(id) => {
