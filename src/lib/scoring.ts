@@ -116,6 +116,18 @@ export function computeDelta(
     const base = Math.max(previous.totalPlays, 100);
     const percent = (delta / base) * 100;
 
+    // ── Anomaly Guard (Fix for Trending -> All-Time Track Glitch) ──
+    // If a track jumps by >500% AND the raw stream jump is >5000 in one day,
+    // it's overwhelmingly likely the ingestion script switched from tracking a 
+    // secondary trending track to their all-time #1 track. Treat as cold start.
+    if (percent > 500 && delta > 5000) {
+        return {
+            deltaStreams24h: 0,
+            deltaStreamsPercent: 0,
+            isColdStart: true,
+        };
+    }
+
     return {
         deltaStreams24h: Math.max(delta, 0),
         deltaStreamsPercent: Number(percent.toFixed(2)),

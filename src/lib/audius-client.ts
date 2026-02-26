@@ -299,10 +299,39 @@ export async function fetchAllTrendingArtists(): Promise<
         await new Promise((r) => setTimeout(r, 200));
     }
 
+    // 2.5 Normalize Trending Artists (CRITICAL FIX for Fake +32000% Growth)
+    // Trending APIs return the *specifically trending* track, which might only have 10 plays.
+    // If the artist later falls off trending and is picked up by Alphabet Search, we fetch their
+    // true all-time top track (e.g. 32k plays). This causes a fake +320,000% delta explosion.
+    // We MUST normalize ALL trending artists to their true all-time #1 track.
+    console.log(`[Audius] Normalizing ${artists.size} trending artists to their true all-time top track...`);
+    const trendingUserIds = Array.from(artists.values()).map(a => a.user);
+    for (let i = 0; i < trendingUserIds.length; i += 10) {
+        const batch = trendingUserIds.slice(i, i + 10);
+        const results = await Promise.allSettled(
+            batch.map(async (user) => {
+                const tracks = await getUserTracks(user.id, 1, "plays");
+                if (tracks && tracks.length > 0) {
+                    return { user, topTrack: tracks[0] as unknown as AudiusTrack };
+                }
+                return null;
+            })
+        );
+        for (const result of results) {
+            if (result.status === "fulfilled" && result.value) {
+                // Overwrite the trending track with their true all-time #1 track
+                artists.set(result.value.user.id, result.value);
+            }
+        }
+        await new Promise((r) => setTimeout(r, 20));
+    }
+
     // 3. Deep Alphabet & Number Search (Massive Scale — Parallelized)
     console.log(`[Audius] Fetching via Deep Alphanumeric Search for massive scale...`);
     const searchChars = "abcdefghijklmnopqrstuvwxyz0123456789".split("");
     for (const char of searchChars) {
+        console.log(`  → Searching character: [ ${char.toUpperCase()} ]`);
+
         // MAXIMUM deep pagination for each character (10 pages * 100 results)
         // Audius API usually caps offset+limit at 1000-2000. We push it to 1000.
         for (let offset = 0; offset <= 1000; offset += 100) {
