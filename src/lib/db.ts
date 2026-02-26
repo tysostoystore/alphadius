@@ -231,6 +231,44 @@ export function upsertScore(db: DatabaseType, s: AlphaScoreRecord): void {
     );
 }
 
+export function countScores(
+    db: DatabaseType,
+    options: {
+        genre?: string;
+        search?: string;
+        minMC?: number;
+        maxMC?: number;
+    } = {},
+): number {
+    const { genre, search, minMC, maxMC } = options;
+    const conditions: string[] = [];
+    const params: unknown[] = [];
+
+    if (genre) {
+        conditions.push("top_track_genre = ?");
+        params.push(genre);
+    }
+    if (search) {
+        conditions.push("(name LIKE ? OR handle LIKE ?)");
+        const likeTerm = `%${search}%`;
+        params.push(likeTerm, likeTerm);
+    }
+    if (minMC !== undefined) {
+        conditions.push("(market_cap IS NULL OR market_cap >= ?)");
+        params.push(minMC);
+    }
+    if (maxMC !== undefined) {
+        conditions.push("(market_cap IS NULL OR market_cap <= ?)");
+        params.push(maxMC);
+    }
+
+    const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+    const sql = `SELECT COUNT(*) as cnt FROM scores ${where}`;
+
+    const row = db.prepare(sql).get(...(params as any[])) as { cnt: number };
+    return row.cnt;
+}
+
 export function queryScores(
     db: DatabaseType,
     options: {

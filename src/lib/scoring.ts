@@ -111,10 +111,10 @@ export function computeDelta(
     }
 
     const delta = current.totalPlays - previous.totalPlays;
-    const percent =
-        previous.totalPlays > 0
-            ? ((delta / previous.totalPlays) * 100)
-            : 0;
+
+    // Smooth the percentage for very small starting numbers (e.g. going from 1 to 500 isn't +49900%)
+    const base = Math.max(previous.totalPlays, 100);
+    const percent = (delta / base) * 100;
 
     return {
         deltaStreams24h: Math.max(delta, 0),
