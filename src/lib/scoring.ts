@@ -117,10 +117,12 @@ export function computeDelta(
     const percent = (delta / base) * 100;
 
     // ── Anomaly Guard (Fix for Trending -> All-Time Track Glitch) ──
-    // If a track jumps by >500% AND the raw stream jump is >5000 in one day,
-    // it's overwhelmingly likely the ingestion script switched from tracking a 
-    // secondary trending track to their all-time #1 track. Treat as cold start.
-    if (percent > 500 && delta > 5000) {
+    // The user pointed out that 500% growth (e.g. 1000 to 6000) is a real viral event.
+    // However, the glitch we are fixing is when an artist is discovered with a trending 
+    // track (e.g. 15 plays) and the next day we fetch their true all-time track (e.g. 25,000 plays).
+    // This creates impossible math like +150,000% in a single day.
+    // We only trigger the guard on structurally broken math: >5000% jump AND >10000 raw streams.
+    if (percent > 5000 && delta > 10000) {
         return {
             deltaStreams24h: 0,
             deltaStreamsPercent: 0,
