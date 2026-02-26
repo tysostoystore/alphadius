@@ -299,35 +299,40 @@ export async function fetchAllTrendingArtists(): Promise<
         await new Promise((r) => setTimeout(r, 200));
     }
 
-    // 3. Alphabet-based User Search (Massive Scale — Parallelized)
-    console.log(`[Audius] Fetching via Alphabet Search for massive scale...`);
-    const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-    for (const letter of alphabet) {
-        const users = await searchUsers(letter, 100, 0);
-        if (users.length === 0) continue;
+    // 3. Deep Alphabet & Number Search (Massive Scale — Parallelized)
+    console.log(`[Audius] Fetching via Deep Alphanumeric Search for massive scale...`);
+    const searchChars = "abcdefghijklmnopqrstuvwxyz0123456789".split("");
+    for (const char of searchChars) {
+        // MAXIMUM deep pagination for each character (10 pages * 100 results)
+        // Audius API usually caps offset+limit at 1000-2000. We push it to 1000.
+        for (let offset = 0; offset <= 1000; offset += 100) {
+            const users = await searchUsers(char, 100, offset);
+            if (users.length === 0) break; // Exhausted this character
 
-        // Lower threshold to capture more emerging artists
-        const activeUsers = users.filter(u => u.follower_count > 50 && u.track_count > 0);
-        const newUsers = activeUsers.filter(u => !artists.has(u.id));
+            // Lower threshold to capture maximum emerging artists
+            const activeUsers = users.filter(u => u.follower_count > 10 && u.track_count > 0);
+            const newUsers = activeUsers.filter(u => !artists.has(u.id));
 
-        // Fetch tracks in parallel batches of 5
-        for (let i = 0; i < newUsers.length; i += 5) {
-            const batch = newUsers.slice(i, i + 5);
-            const results = await Promise.allSettled(
-                batch.map(async (user) => {
-                    const tracks = await getUserTracks(user.id, 1, "plays");
-                    if (tracks && tracks.length > 0) {
-                        return { user, topTrack: tracks[0] as unknown as AudiusTrack };
+            // Fetch tracks in larger parallel batches of 10
+            for (let i = 0; i < newUsers.length; i += 10) {
+                const batch = newUsers.slice(i, i + 10);
+                const results = await Promise.allSettled(
+                    batch.map(async (user) => {
+                        const tracks = await getUserTracks(user.id, 1, "plays");
+                        if (tracks && tracks.length > 0) {
+                            return { user, topTrack: tracks[0] as unknown as AudiusTrack };
+                        }
+                        return null;
+                    })
+                );
+                for (const result of results) {
+                    if (result.status === "fulfilled" && result.value) {
+                        artists.set(result.value.user.id, result.value);
                     }
-                    return null;
-                })
-            );
-            for (const result of results) {
-                if (result.status === "fulfilled" && result.value) {
-                    artists.set(result.value.user.id, result.value);
                 }
+                // Very short pause to balance speed vs rate-limit
+                await new Promise((r) => setTimeout(r, 20));
             }
-            await new Promise((r) => setTimeout(r, 50));
         }
     }
 
