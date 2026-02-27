@@ -135,6 +135,35 @@ export function AlphaTable() {
         }
     }, [sort, order, genre, debouncedSearch, data.length]);
 
+    // Used exclusively by the Map view when the user drags the Render Limit slider
+    const forceFetchToCount = useCallback(async (targetCount: number) => {
+        if (targetCount <= data.length || loadingMore || loading) return;
+        setLoadingMore(true);
+        try {
+            const missing = targetCount - data.length;
+            const params = new URLSearchParams({
+                sort,
+                order,
+                limit: missing.toString(),
+                offset: data.length.toString(),
+            });
+            if (genre) params.set("genre", genre);
+            if (debouncedSearch) params.set("search", debouncedSearch);
+
+            const res = await fetch(`/api/alpha-feed?${params}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json: AlphaFeedResponse = await res.json();
+
+            setData(prev => [...prev, ...json.data]);
+            setHasMore(json.data.length >= missing);
+            setError(null);
+        } catch (err) {
+            setError((err as Error).message);
+        } finally {
+            setLoadingMore(false);
+        }
+    }, [sort, order, genre, debouncedSearch, data.length, loading, loadingMore]);
+
     // Infinite Scroll Observer
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -270,6 +299,8 @@ export function AlphaTable() {
                                 genres={genres}
                                 selectedGenre={genre}
                                 onGenreChange={setGenre}
+                                onRequireMoreData={forceFetchToCount}
+                                isLoadingMore={loadingMore}
                             />
                         </Suspense>
 

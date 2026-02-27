@@ -11,6 +11,8 @@ export interface ConstellationMapProps {
     genres?: string[];
     selectedGenre?: string;
     onGenreChange?: (genre: string) => void;
+    onRequireMoreData?: (targetCount: number) => void;
+    isLoadingMore?: boolean;
 }
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -84,10 +86,17 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export const ConstellationMap = memo(function ConstellationMap({ data, onArtistClick, onArtistHover, genres, selectedGenre, onGenreChange }: ConstellationMapProps) {
+export const ConstellationMap = memo(function ConstellationMap({ data, onArtistClick, onArtistHover, genres, selectedGenre, onGenreChange, onRequireMoreData, isLoadingMore }: ConstellationMapProps) {
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-    const [limit, setLimit] = useState(500);
+    const [limit, setLimit] = useState(100);
     const [isFullscreen, setIsFullscreen] = useState(false);
+
+    // Trigger data fetch if slider exceeds currently loaded data
+    useEffect(() => {
+        if (limit > data.length && onRequireMoreData && !isLoadingMore) {
+            onRequireMoreData(limit);
+        }
+    }, [limit, data.length, onRequireMoreData, isLoadingMore]);
 
     // ESC to exit fullscreen
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
