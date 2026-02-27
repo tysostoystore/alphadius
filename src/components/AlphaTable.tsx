@@ -43,14 +43,14 @@ function formatUSD(n: number | null | undefined): string {
 }
 
 function getScoreColor(score: number): string {
-    if (score >= 1000) return "text-fuchsia-400 drop-shadow-[0_0_5px_rgba(217,70,239,0.8)]";
-    if (score >= 250) return "text-purple-400";
+    if (score >= 400) return "text-fuchsia-400 drop-shadow-[0_0_5px_rgba(217,70,239,0.8)]";
+    if (score >= 100) return "text-purple-400";
     return "text-zinc-500";
 }
 
 function getScoreBg(score: number): string {
-    if (score >= 1000) return "bg-fuchsia-500/10 border-fuchsia-500/30";
-    if (score >= 250) return "bg-purple-500/10 border-purple-500/20";
+    if (score >= 400) return "bg-fuchsia-500/10 border-fuchsia-500/30";
+    if (score >= 100) return "bg-purple-500/10 border-purple-500/20";
     return "bg-zinc-800/50 border-zinc-700/50";
 }
 
@@ -389,9 +389,9 @@ export function AlphaTable() {
                                             <td className="px-3 py-3">
                                                 <div className="flex items-center gap-2 sm:gap-3">
                                                     <div className="relative shrink-0 flex items-center justify-center">
-                                                        {artist.alphaScore >= 1000 && (
+                                                        {artist.alphaScore >= 400 && (
                                                             <>
-                                                                <div className="absolute -inset-1 rounded-full animate-[spin_2s_linear_infinite] blur-[3px] opacity-70 z-0 pointer-events-none" style={{ background: 'conic-gradient(from 0deg, #d946ef, #8b5cf6, #d946ef)' }} title="Top Alpha Score (α ≥ 1000)" />
+                                                                <div className="absolute -inset-1 rounded-full animate-[spin_2s_linear_infinite] blur-[3px] opacity-70 z-0 pointer-events-none" style={{ background: 'conic-gradient(from 0deg, #d946ef, #8b5cf6, #d946ef)' }} title="Top Alpha Score (α ≥ 400)" />
                                                                 <div className="absolute -inset-[2px] rounded-full animate-[spin_3s_linear_infinite_reverse] opacity-100 z-0 pointer-events-none" style={{ background: 'conic-gradient(from 0deg, transparent 0%, #d946ef 25%, transparent 50%, #8b5cf6 75%, transparent 100%)' }} />
                                                             </>
                                                         )}
