@@ -114,7 +114,9 @@ export function AlphaTable() {
             const json: AlphaFeedResponse = await res.json();
 
             setData(prev => isAppend ? [...prev, ...json.data] : json.data);
-            setAlerts(json.meta.alerts);
+            if (!isAppend) {
+                setAlerts(json.meta.alerts);
+            }
             setGenres(json.meta.genres);
             setHasMore(json.data.length >= limit);
             if (!isAppend && json.meta.lastRefreshed) {

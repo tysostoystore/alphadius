@@ -88,7 +88,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export const ConstellationMap = memo(function ConstellationMap({ data, onArtistClick, onArtistHover, genres, selectedGenre, onGenreChange, onRequireMoreData, isLoadingMore }: ConstellationMapProps) {
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-    const [limit, setLimit] = useState(100);
+    const [limit, setLimit] = useState(500);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     // Trigger data fetch if slider exceeds currently loaded data
