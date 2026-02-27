@@ -110,7 +110,7 @@ export function computeDelta(
         };
     }
 
-    const delta = current.totalPlays - previous.totalPlays;
+    const delta = Math.max(0, current.totalPlays - previous.totalPlays);
 
     // Smooth the percentage for very small starting numbers (e.g. going from 1 to 500 isn't +49900%)
     const base = Math.max(previous.totalPlays, 100);
@@ -131,7 +131,7 @@ export function computeDelta(
     }
 
     return {
-        deltaStreams24h: Math.max(delta, 0),
+        deltaStreams24h: delta,
         deltaStreamsPercent: Number(percent.toFixed(2)),
         isColdStart: false,
     };
