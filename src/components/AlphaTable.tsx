@@ -44,13 +44,13 @@ function formatUSD(n: number | null | undefined): string {
 
 function getScoreColor(score: number): string {
     if (score >= 1000) return "text-fuchsia-400 drop-shadow-[0_0_5px_rgba(217,70,239,0.8)]";
-    if (score >= 100) return "text-purple-400";
+    if (score >= 250) return "text-purple-400";
     return "text-zinc-500";
 }
 
 function getScoreBg(score: number): string {
     if (score >= 1000) return "bg-fuchsia-500/10 border-fuchsia-500/30";
-    if (score >= 100) return "bg-purple-500/10 border-purple-500/20";
+    if (score >= 250) return "bg-purple-500/10 border-purple-500/20";
     return "bg-zinc-800/50 border-zinc-700/50";
 }
 
