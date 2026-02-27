@@ -292,8 +292,8 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
                                     isAnimationActive={true}
                                 >
                                     {chartData.map((entry, index) => {
-                                        const isHighAlpha = index <= 10;
-                                        const isMidAlpha = index > 10 && index <= 50;
+                                        const isHighAlpha = entry.alphaScore >= 250;
+                                        const isMidAlpha = entry.alphaScore >= 100 && entry.alphaScore < 250;
                                         const isHovered = hoveredNode === entry.audiusUserId;
 
                                         let fill = "#52525b";
