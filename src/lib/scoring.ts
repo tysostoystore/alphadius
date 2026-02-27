@@ -121,8 +121,8 @@ export function computeDelta(
     // track (e.g. 15 plays) and the next day we fetch their all-time portfolio (e.g. 25,000 plays).
     // We catch two specific shapes of this ingestion artifact:
     // 1. Massive volume jump: > 4,000 streams AND > 400% growth  (e.g., 1000 -> 6000)
-    // 2. Mathematically absurd jump: > 2000% growth (e.g., 20 -> 500)
-    if ((percent > 400 && delta > 4000) || percent > 2000) {
+    // 2. Mathematically absurd jump: > 1000% growth (e.g., 20 -> 500)
+    if ((percent > 400 && delta > 4000) || percent > 1000) {
         return {
             deltaStreams24h: 0,
             deltaStreamsPercent: 0,
