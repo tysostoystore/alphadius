@@ -98,7 +98,7 @@ export function AlphaTable() {
 
         try {
             const currentOffset = isAppend ? data.length : 0;
-            const limit = isAppend ? 100 : 5000; // Load initial dataset
+            const limit = isAppend ? 100 : 50; // Load tiny initial dataset (mobile bottleneck fix)
 
             const params = new URLSearchParams({
                 sort,
@@ -176,7 +176,7 @@ export function AlphaTable() {
         }
     };
 
-    const SortIcon = ({ field }: { field: SortField }) => {
+    const SortIcon = useCallback(({ field }: { field: SortField }) => {
         if (sort !== field)
             return <ArrowUpDown className="w-3 h-3 text-terminal-muted" />;
         return order === "desc" ? (
@@ -184,7 +184,7 @@ export function AlphaTable() {
         ) : (
             <ChevronUp className="w-3 h-3 text-neon-cyan" />
         );
-    };
+    }, [sort, order]);
 
     // Server-side filtering, so no client-side slice needed for 'filteredData'
     const displayData = data;
@@ -366,6 +366,8 @@ export function AlphaTable() {
                                                             <img
                                                                 src={artist.profilePicture}
                                                                 alt={artist.name}
+                                                                loading="lazy"
+                                                                decoding="async"
                                                                 className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0A0510] object-cover ring-2 ring-[#0A0510]"
                                                                 onError={(e) => {
                                                                     const target = e.target as HTMLImageElement;
