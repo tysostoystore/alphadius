@@ -131,10 +131,10 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
             .map(d => ({
                 ...d,
                 // X = total plays: more streams → further right
-                x: Math.max(1, d.totalPlays * (1 + (Math.random() * 0.08 - 0.04))),
+                x: Math.max(1, d.totalPlays),
                 // Y = undervaluation ratio (plays / followers+100)
                 // top-right = many plays + still undervalued = MAXIMUM ALPHA
-                y: Math.max(0.5, (d.totalPlays / (d.followerCount + 100)) * (1 + (Math.random() * 0.08 - 0.04))),
+                y: Math.max(0.5, d.totalPlays / (d.followerCount + 100)),
                 z: Math.max(1, d.alphaScore)
             }));
 
@@ -194,8 +194,9 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
                     </div>
                     <input
                         type="range"
-                        min="1"
-                        max={Math.max(1, data.length)}
+                        min="50"
+                        max="10000"
+                        step="50"
                         value={limit}
                         onChange={(e) => setLimit(Number(e.target.value))}
                         className="w-full accent-purple-500 h-1 sm:h-1.5 bg-zinc-800/80 hover:bg-zinc-700/80 rounded-lg appearance-none cursor-pointer backdrop-blur transition-all"
