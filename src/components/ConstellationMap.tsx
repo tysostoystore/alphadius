@@ -13,6 +13,7 @@ export interface ConstellationMapProps {
     onGenreChange?: (genre: string) => void;
     onRequireMoreData?: (targetCount: number) => void;
     isLoadingMore?: boolean;
+    tiers?: { tier1: number; tier2: number; };
 }
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -86,7 +87,7 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export const ConstellationMap = memo(function ConstellationMap({ data, onArtistClick, onArtistHover, genres, selectedGenre, onGenreChange, onRequireMoreData, isLoadingMore }: ConstellationMapProps) {
+export const ConstellationMap = memo(function ConstellationMap({ data, onArtistClick, onArtistHover, genres, selectedGenre, onGenreChange, onRequireMoreData, isLoadingMore, tiers }: ConstellationMapProps) {
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
     const [limit, setLimit] = useState(500);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -292,8 +293,8 @@ export const ConstellationMap = memo(function ConstellationMap({ data, onArtistC
                                     isAnimationActive={true}
                                 >
                                     {chartData.map((entry, index) => {
-                                        const isHighAlpha = entry.alphaScore >= 250;
-                                        const isMidAlpha = entry.alphaScore >= 100 && entry.alphaScore < 250;
+                                        const isHighAlpha = entry.alphaScore >= (tiers?.tier1 ?? 250);
+                                        const isMidAlpha = entry.alphaScore >= (tiers?.tier2 ?? 100) && entry.alphaScore < (tiers?.tier1 ?? 250);
                                         const isHovered = hoveredNode === entry.audiusUserId;
 
                                         let fill = "#52525b";

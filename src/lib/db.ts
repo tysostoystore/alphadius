@@ -231,6 +231,16 @@ export function upsertScore(db: DatabaseType, s: AlphaScoreRecord): void {
     );
 }
 
+export function getAlphaTiers(db: DatabaseType): { tier1: number; tier2: number } {
+    const tier1Row = db.prepare(`SELECT alpha_score FROM scores WHERE alpha_score > 0 ORDER BY alpha_score DESC LIMIT 1 OFFSET 9`).get() as { alpha_score: number } | undefined;
+    const tier2Row = db.prepare(`SELECT alpha_score FROM scores WHERE alpha_score > 0 ORDER BY alpha_score DESC LIMIT 1 OFFSET 49`).get() as { alpha_score: number } | undefined;
+
+    return {
+        tier1: tier1Row?.alpha_score ?? 250, // fallback to previous hardcoded
+        tier2: tier2Row?.alpha_score ?? 100,
+    };
+}
+
 export function countScores(
     db: DatabaseType,
     options: {

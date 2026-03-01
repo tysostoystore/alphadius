@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getDb, queryScores, countScores, getDistinctGenres } from "../../lib/db";
+import { getDb, queryScores, countScores, getDistinctGenres, getAlphaTiers } from "../../lib/db";
 import { AlphaFeedQuerySchema } from "../../lib/types";
 import { generateAlerts } from "../../lib/scoring";
 import fs from "node:fs";
@@ -27,6 +27,7 @@ export const GET: APIRoute = async ({ url }) => {
         const total = countScores(db, parsed.data as any);
         const genres = getDistinctGenres(db);
         const alerts = generateAlerts(scores);
+        const tiers = getAlphaTiers(db);
 
         // Last ingestion timestamp from DB
         const lastRefreshedRow = db
@@ -41,6 +42,7 @@ export const GET: APIRoute = async ({ url }) => {
                     total,
                     genres,
                     alerts: alerts.slice(0, 10),
+                    tiers,
                     query: parsed.data,
                     timestamp: Date.now(),
                     lastRefreshed,

@@ -149,8 +149,10 @@ export interface AlphaFeedResponse {
         total: number;
         genres: string[];
         alerts: AlphaAlert[];
+        tiers?: { tier1: number; tier2: number; };
         query: any;
         timestamp: number;
+        lastRefreshed?: number;
     };
 }
 
