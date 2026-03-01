@@ -117,7 +117,7 @@ export function AlphaTable() {
             setData(prev => isAppend ? [...prev, ...json.data] : json.data);
             if (!isAppend) {
                 setAlerts(json.meta.alerts);
-                if (json.meta.tiers) setTiers(json.meta.tiers);
+                if ((json.meta as any).tiers) setTiers((json.meta as any).tiers);
             }
             setGenres(json.meta.genres);
             setHasMore(json.data.length >= limit);
